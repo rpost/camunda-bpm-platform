@@ -48,6 +48,7 @@
     {"name": "Group"},
     {"name": "Historic Activity Instance"},
     {"name": "Historic Process Instance"},
+    {"name": "Historic Detail"},
     {"name": "Identity"},
     {"name": "Incident"},
     {"name": "Job"},
