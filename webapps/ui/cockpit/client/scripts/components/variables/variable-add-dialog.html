@@ -1,8 +1,8 @@
 <!-- # CE - camunda-bpm-webapp/ui/cockpit/client/scripts/components/variables/variable-add-dialog.html -->
 <div class="modal-header">
   <h3>
-    {{ isProcessInstance && !isBatchOperation ? 'VARIABLE_ADD_MODAL_TITLE_PROCESS' : '' | translate }}
-    {{ isBatchOperation ? 'VARIABLE_ADD_MODAL_TITLE_BATCH' : '' | translate }}
+    {{ isProcessInstance && !isBatchOperation ? 'Add Variable' : '' }}
+    {{ isBatchOperation ? 'Add Variable ' : '' }}
     {{ !isProcessInstance && !isBatchOperation ? 'VARIABLE_ADD_MODAL_TITLE_CASE' : '' | translate }}
   </h3>
 </div>
@@ -72,9 +72,8 @@
     </fieldset>
   </form>
 
-  <div ng-if="status === 'SUCCESS' && isBatchOperation"
-       translate="VARIABLE_ADD_STATUS_SUCCESS_BATCH"
-       translate-values="{ name: newVariable.name }">
+  <div ng-if="status === 'SUCCESS' && isBatchOperation">
+    The variable "{{newVariable.name}}" has been added to the migration plan successfully.
   </div>
 
   <div ng-if="status === 'SUCCESS' && isProcessInstance && !isBatchOperation"
