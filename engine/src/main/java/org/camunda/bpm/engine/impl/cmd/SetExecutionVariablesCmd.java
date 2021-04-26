@@ -34,6 +34,16 @@ public class SetExecutionVariablesCmd extends AbstractSetVariableCmd {
 
   private static final long serialVersionUID = 1L;
 
+  public SetExecutionVariablesCmd(String executionId,
+                                  Map<String, ?> variables,
+                                  boolean isLocal,
+                                  boolean disableOperationLog) {
+    super(executionId, variables, isLocal);
+    if (disableOperationLog) {
+      super.disableLogUserOperation();
+    }
+  }
+
   public SetExecutionVariablesCmd(String executionId, Map<String, ? extends Object> variables, boolean isLocal) {
     super(executionId, variables, isLocal);
   }

@@ -18,11 +18,13 @@ package org.camunda.bpm.engine.test.api.runtime.migration.batch;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.camunda.bpm.engine.RuntimeService;
 import org.camunda.bpm.engine.batch.Batch;
 import org.camunda.bpm.engine.impl.cfg.ProcessEngineConfigurationImpl;
 import org.camunda.bpm.engine.management.JobDefinition;
+import org.camunda.bpm.engine.migration.MigrationInstructionsBuilder;
 import org.camunda.bpm.engine.migration.MigrationPlan;
 import org.camunda.bpm.engine.repository.ProcessDefinition;
 import org.camunda.bpm.engine.test.ProcessEngineRule;
@@ -75,21 +77,32 @@ public class BatchMigrationHelper extends BatchHelper{
     return migrateProcessInstancesAsync(1, sourceProcessDefinition, targetProcessDefinition);
   }
 
-  public Batch migrateProcessInstancesAsync(int numberOfProcessInstances, ProcessDefinition sourceProcessDefinition, ProcessDefinition targetProcessDefinition) {
+  public Batch migrateProcessInstancesAsync(int numberOfProcessInstances,
+      ProcessDefinition sourceProcessDefinition, ProcessDefinition targetProcessDefinition,
+      Map<String, Object> variables) {
     RuntimeService runtimeService = engineRule.getRuntimeService();
 
     List<String> processInstanceIds = new ArrayList<String>(numberOfProcessInstances);
     for (int i = 0; i < numberOfProcessInstances; i++) {
       processInstanceIds.add(
-        runtimeService.startProcessInstanceById(sourceProcessDefinition.getId()).getId());
+          runtimeService.startProcessInstanceById(sourceProcessDefinition.getId()).getId());
     }
 
-    MigrationPlan migrationPlan = engineRule.getRuntimeService()
-      .createMigrationPlan(sourceProcessDefinition.getId(), targetProcessDefinition.getId())
-      .mapEqualActivities()
-      .build();
+    MigrationInstructionsBuilder planBuilder = engineRule.getRuntimeService()
+        .createMigrationPlan(sourceProcessDefinition.getId(), targetProcessDefinition.getId())
+        .mapEqualActivities();
 
-    return runtimeService.newMigration(migrationPlan).processInstanceIds(processInstanceIds).executeAsync();
+    if (variables != null) {
+      planBuilder.setVariables(variables);
+    }
+
+    return runtimeService.newMigration(planBuilder.build())
+        .processInstanceIds(processInstanceIds)
+        .executeAsync();
+  }
+
+  public Batch migrateProcessInstancesAsync(int numberOfProcessInstances, ProcessDefinition sourceProcessDefinition, ProcessDefinition targetProcessDefinition) {
+    return migrateProcessInstancesAsync(numberOfProcessInstances, sourceProcessDefinition, targetProcessDefinition, null);
   }
 
   @Override

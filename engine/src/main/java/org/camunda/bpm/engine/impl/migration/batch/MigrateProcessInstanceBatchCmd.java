@@ -65,6 +65,8 @@ public class MigrateProcessInstanceBatchCmd extends AbstractMigrationCmd impleme
 
     String tenantId = sourceDefinition.getTenantId();
 
+    Map<String, Object> variables = migrationPlan.getVariables();
+
     Batch batch = new BatchBuilder(commandContext)
         .type(Batch.TYPE_PROCESS_INSTANCE_MIGRATION)
         .config(getConfiguration(collectedInstanceIds, sourceDefinition.getDeploymentId()))
@@ -72,12 +74,13 @@ public class MigrateProcessInstanceBatchCmd extends AbstractMigrationCmd impleme
         .permissionHandler(ctx -> checkAuthorizations(ctx, sourceDefinition, targetDefinition))
         .tenantId(tenantId)
         .operationLogHandler((ctx, instanceCount) ->
-            writeUserOperationLog(ctx, sourceDefinition, targetDefinition, instanceCount, true))
+            writeUserOperationLog(ctx, sourceDefinition, targetDefinition, instanceCount, variables, true))
         .build();
 
-    Map<String, ?> variables = migrationPlan.getVariables();
-    String batchId = batch.getId();
-    VariableUtil.setVariablesByBatchId(variables, batchId);
+    if (variables != null) {
+      String batchId = batch.getId();
+      VariableUtil.setVariablesByBatchId(variables, batchId);
+    }
 
     return batch;
   }

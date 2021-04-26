@@ -18,6 +18,8 @@ package org.camunda.bpm.engine.migration;
 
 import org.camunda.bpm.engine.AuthorizationException;
 import org.camunda.bpm.engine.authorization.Permissions;
+import org.camunda.bpm.engine.authorization.ProcessDefinitionPermissions;
+import org.camunda.bpm.engine.authorization.ProcessInstancePermissions;
 import org.camunda.bpm.engine.authorization.Resources;
 import org.camunda.bpm.engine.variable.VariableMap;
 
@@ -51,6 +53,12 @@ public interface MigrationPlanBuilder {
    * @throws AuthorizationException
    *         if the user has no {@link Permissions#READ} permission on {@link Resources#PROCESS_DEFINITION}
    *         for both, source and target process definition.
+   * TODO @throws AuthorizationException
+   *          if the user has none of the following:
+   *          <li>{@link ProcessInstancePermissions#UPDATE_VARIABLE} permission on {@link Resources#PROCESS_INSTANCE}</li>
+   *          <li>{@link ProcessDefinitionPermissions#UPDATE_INSTANCE_VARIABLE} permission on {@link Resources#PROCESS_DEFINITION}</li>
+   *          <li>{@link Permissions#UPDATE} permission on {@link Resources#PROCESS_INSTANCE}</li>
+   *          <li>{@link Permissions#UPDATE_INSTANCE} permission on {@link Resources#PROCESS_DEFINITION}</li>
    */
   MigrationPlan build();
 

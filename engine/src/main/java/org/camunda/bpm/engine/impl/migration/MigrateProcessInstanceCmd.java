@@ -33,6 +33,7 @@ import org.camunda.bpm.engine.BadUserRequestException;
 import org.camunda.bpm.engine.impl.ProcessEngineImpl;
 import org.camunda.bpm.engine.impl.ProcessEngineLogger;
 import org.camunda.bpm.engine.impl.cfg.CommandChecker;
+import org.camunda.bpm.engine.impl.cmd.SetExecutionVariablesCmd;
 import org.camunda.bpm.engine.impl.context.ProcessApplicationContextUtil;
 import org.camunda.bpm.engine.impl.interceptor.Command;
 import org.camunda.bpm.engine.impl.interceptor.CommandContext;
@@ -106,6 +107,7 @@ public class MigrateProcessInstanceCmd extends AbstractMigrationCmd implements C
           sourceDefinition,
           targetDefinition,
           processInstanceIds.size(),
+          migrationPlan.getVariables(),
           false);
     }
 
@@ -159,9 +161,8 @@ public class MigrateProcessInstanceCmd extends AbstractMigrationCmd implements C
 
     Map<String, ?> variables = migrationPlan.getVariables();
     if (variables != null) {
-      commandContext.getProcessEngineConfiguration()
-          .getRuntimeService()
-          .setVariables(processInstanceId, variables);
+      new SetExecutionVariablesCmd(processInstanceId, variables, false, true)
+          .execute(commandContext);
     }
 
     return null;
